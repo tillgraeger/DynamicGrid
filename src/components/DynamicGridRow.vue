@@ -4,106 +4,73 @@ import DynamicGridElement from "./DynamicGridElement.vue";
 
 export default Vue.extend({
   name: "DynamicGridRow",
-  props: ["row", "nextItem"],
+  props: ["row", "positionOfBigElement"],
   components: { DynamicGridElement },
   setup(props, context) {
     //---data---
-    const idCounter = ref(props.nextItem);
-    const moveLeft = ref(false);
-    const moveRight = ref(false);
-    const scaleLeft = ref(false);
-    const scaleRight = ref(false);
-    const rowElements = ref([]);
-
-    const toPosition = 1;
+    const rowElements = ref(props.row.rowElements);
+    const bigPosition = ref(props.positionOfBigElement);
 
     //---functions---
-    // toggle animation variables
-    const animate = (direction: boolean) => {
-      if (direction) {
-        moveLeft.value = true;
-        scaleLeft.value = true;
-        setTimeout(() => {
-          moveLeft.value = false;
-          scaleLeft.value = false;
-        }, 1000);
-      } else {
-        moveRight.value = true;
-        scaleRight.value = true;
-        setTimeout(() => {
-          moveRight.value = false;
-          scaleRight.value = false;
-        }, 1000);
-      }
-    };
-    // switch two elements in an array
-    const switchToPosition = (
-      arr: Array<any>,
-      fromIndex: number,
-      toIndex: number
-    ) => {
-      const element = arr.splice(fromIndex, 1)[0];
-      arr.splice(toIndex, 0, element);
-    };
-
-    // toggle size of element and put it on the right position in the array
-    const toggleSize = (el: any) => {
-      context.emit("nofavorite");
-      var id = idCounter.value.rowArray.ids[idCounter.value.rowArray.idCounter];
-      var fromIndex = rowElements.value
-        .map((e) => {
-          return e.id;
-        })
-        .indexOf(id);
-      const toIndex = rowElements.value[0].big ? toPosition : 0;
-
-      switchToPosition(rowElements.value, fromIndex, toIndex);
-      rowElements.value[toIndex].big = !rowElements.value[toIndex].big;
-      el.big = !el.big;
-
-      if (
-        idCounter.value.rowArray.idCounter <
-        idCounter.value.rowArray.ids.length - 1
-      ) {
-        idCounter.value.rowArray.idCounter++;
-      } else {
-        idCounter.value.rowArray.idCounter = 0;
-      }
-      animate(toIndex == toPosition);
-    };
-
-    const openModal = (el: any) => {
-      context.emit("open", el);
-    };
-
-    rowElements.value = props.row.rowElements;
-
-    animate(rowElements.value[0].big);
+    function pushFirstElementToEnd() {
+      rowElements.value.push(rowElements.value.shift());
+      bigPosition.value = !bigPosition.value;
+    }
 
     return {
-      moveLeft,
-      moveRight,
-      scaleLeft,
-      scaleRight,
-      toggleSize,
-      openModal,
+      rowElements,
+      bigPosition,
+      pushFirstElementToEnd,
     };
   },
 });
 </script>
 
 <template>
-  <div class="grid-row-container md:grid-row-container-desktop">
+  <div
+    :class="{ moveLeft: bigPosition, moveRight: !bigPosition }"
+    class="grid-row-container md:grid-row-container-desktop h-80"
+  >
     <DynamicGridElement
-      v-for="el in row.rowElements"
+      :class="{
+        'grid-element-big': el == rowElements[0],
+        'col-start-2': el == rowElements[0] && bigPosition,
+      }"
+      v-for="el in rowElements"
       :key="el.id"
       :el="el"
-      :moveLeft="moveLeft"
-      :moveRight="moveRight"
-      :scaleLeft="scaleLeft"
-      :scaleRight="scaleRight"
-      @click="openModal(el)"
-      @toggle="toggleSize(el)"
+      :showButton="el == rowElements[0]"
+      @click="pushFirstElementToEnd"
     />
   </div>
 </template>
+
+<style>
+.moveLeft {
+  animation: moveLeft 600ms;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes moveLeft {
+  0% {
+    transform: translateX(20rem);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+
+.moveRight {
+  animation: moveRight 600ms;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes moveRight {
+  0% {
+    transform: translateX(-20rem);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+</style>

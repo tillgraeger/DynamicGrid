@@ -16,19 +16,15 @@
   }
 
   .grid-element-container {
-    @apply relative overflow-hidden flex flex-col border border-gray-500 rounded-md;
+    @apply relative overflow-hidden flex flex-col border border-gray-500 rounded-md text-xs h-full;
   }
 
   .grid-element-big {
-    @apply col-span-2 row-span-2 h-[20.5rem];
-  }
-
-  .grid-element-small {
-    @apply text-xs h-40;
+    @apply col-span-2 row-span-2;
   }
 
   .modal-background {
-    @apply z-30 flex justify-center items-center fixed top-0 right-0 left-0 bottom-0;
+    @apply z-30 flex justify-center items-center absolute top-0 right-0 left-0 bottom-0;
     background-color: rgba(0, 0, 0, 0.5);
   }
 
@@ -46,7 +42,7 @@
   }
 
   .close-button {
-    @apply absolute top-1 right-1 z-10 bg-red-400 rounded-md p-1 inline-flex items-center justify-center text-white hover:bg-red-600;
+    @apply absolute top-1 right-1 z-10 bg-red-400 rounded-md p-1 items-center justify-center text-white hover:bg-red-600;
   }
 
   .loading-spinner {
