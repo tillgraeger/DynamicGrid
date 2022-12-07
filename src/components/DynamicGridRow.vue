@@ -28,8 +28,8 @@ export default Vue.extend({
 
 <template>
   <div
-    :class="{ moveLeft: bigPosition, moveRight: !bigPosition }"
-    class="grid-row-container md:grid-row-container-desktop h-80"
+    :class="{ moveLeft: !bigPosition, moveRight: bigPosition }"
+    class="grid-row-container h-80"
   >
     <DynamicGridElement
       :class="{
